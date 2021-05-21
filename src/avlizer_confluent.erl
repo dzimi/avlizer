@@ -67,6 +67,7 @@
         , make_encoder/2
         , get_decoder/1
         , get_decoder/2
+        , get_decoder_with_opts/2
         , get_encoder/1
         , get_encoder/2
         , maybe_download/1
@@ -154,11 +155,15 @@ make_encoder(Name, Fp) -> make_encoder({Name, Fp}).
 %% use `make_enodcer/1' for better performance.
 -spec get_decoder(ref()) -> avro:simple_decoder().
 get_decoder(Ref) ->
-  Decoder = avro:make_decoder(?LKUP(Ref), [{encoding, avro_binary}]),
-  fun(Bin) -> Decoder(?ASSIGNED_NAME, Bin) end.
+    get_decoder_with_opts(Ref, [{encoding, avro_binary}]).
 
 -spec get_decoder(name(), fp()) -> avro:simple_decoder().
 get_decoder(Name, Fp) -> get_decoder({Name, Fp}).
+
+-spec get_decoder_with_opts(ref(), proplists:proplist()) -> avro:simple_decoder().
+get_decoder_with_opts(Ref, Opts) ->
+  Decoder = avro:make_decoder(?LKUP(Ref), Opts),
+  fun(Bin) -> Decoder(?ASSIGNED_NAME, Bin) end.
 
 %% @doc Get avro decoder by lookup already decode avro schema
 %% from cache, and make a encoder from it.
